@@ -1,0 +1,34 @@
+version: '3'
+services:
+  mysql-app:
+    image: mysql:5.7
+    container_name: mysqltest
+    #ports:
+    #  - "3306:3306"
+    expose:
+      - "3306"
+    environment:
+      - MYSQL_USER=root
+      - MYSQL_ROOT_PASSWORD=Mind@India#19
+    volumes:
+      - "./conf.d:/etc/mysql/conf.d:ro"
+    restart: always
+    networks:
+      - springbootjava
+  petclinic:
+    image: my-javaspring-imagent
+    #build: .
+    ports:
+      - '8080:8080'
+    restart: always
+    depends_on:
+      - mysql-app
+    environment:
+      RDS_HOSTNAME: mysql-app
+      RDS_PORT: 3306
+      RDS_USERNAME: root
+      RDS_PASSWORD: Mind@India#19
+    networks:
+      - springbootjava
+networks:
+  springbootjava:

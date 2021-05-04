@@ -1,0 +1,438 @@
+		==>.tn.txt
+#!/bin/bash
+
+#Simple Script
+#Author:
+
+echo $1 >> ~/notes.txt
+
+echo $* >> ~/notes.txt
+
+echo $(date): $* >> ~/notes.txt
+
+echo $(date): $note >> ~/notes.txt 
+echo Note saved : $note
+					cmd line execute= './tn added date to note'
+........................................
+
+Shebang
+- First line of file.
+- Starts with #!.
+- specify which interpreter should run the code.
+- specify options for interpreter.
+
+Bash Scripts
+- #!/bin/bash
+
+- don't name your script "test","if" or "ls".
+
+type command:
+- type test
+
+.............................................
+
+:~Variables~:
+
+- a="Ram"
+- echo $a
+- files="file1 file2"
+- touch $files
+- ls -l $files
+	
+-Variable name letter,number and underscore.
+-First character should be _ or letter.
+-Case sensitive
+
+*man
+
+
+
+# Ask for input
+	read -p "your note: " note
+
+-echo $date : $note >> ~/${topic}notes.txt
+-echo Note saved: $note
+////////////////////////////////////////////////////
+#get the date
+date = $(date)
+
+#get the topic
+topic=$1
+
+#filename to write to
+filename="${HOME}/${topic}notes.txt"   #~/${topic}notes.txt
+
+#ask user to read
+read -p "your note: " note
+
+echo "$date: $note" >> "$filename"
+echo "Note \'$note\' saved to $filename"
+
+		
+
+/////////////////////////////////////////////////////
+
+
+Good Habits:
+- use "$x" instead of $x.
+- prevent surprises when it contains spaces
+- use double quotes : keeping meaning intact.
+
+Debugging: set -x(enable) .... set +x(disable)
+
+
+................................................................
+
+::~If,Then,Else~::
+
+if mkdir a;then echo "ok";else echo "error"; fi
+
+if testcode;then
+	#code here gets executed
+fi
+
+if testcode;then
+	#code here gets executed
+else
+	#some code
+fi
+////////////////////////////////////////////////////
+#get the date
+date = $(date)
+
+#get the topic
+topic=$1
+
+#filename to write to
+filename="${HOME}/${topic}notes.txt"   #~/${topic}notes.txt
+
+#ask user to read
+read -p "your note: " note
+
+
+if [[ $note ]];then
+	echo "$date: $note" >> "$filename"
+	echo "Note \'$note\' saved to $filename"
+else
+	echo "Note wasn't saved"
+
+fi
+/////////////////////////////////////////////////////
+
+return code or exit status
+ - value returned by program upon exit
+ - 0..255
+ - 0 means success other are error codes
+
+conditional expression:
+ -tests on files and directories.
+ -tests on strings.
+ -arithmetic tests.
+
+* [[ $str ]]  str is not empty
+  [[ $str="something" ]] str equals to something
+  [[ -e $filename ]]  file $filename exists
+  [[ -d $dirname ]]  $dirname is a directory                   
+ 
+Arithematic tests
+
+[[arg1 op arg2]]
+
+op:
+ -> -eq,-ne,-lt,-gt
+ -> $#,$?
+
+
+if [[ $1 = "cat" ]];then
+	echo "meow"
+elif [[ $1 = "dog" ]];then
+	echo "woof"
+elif [[ $1 = "cow" ]];then
+	echo "mooo"
+else 
+	echo "unknown animal"
+fi
+
+ ->  && for and || for or ! for not
+
+
+..................................................................
+Inputs & Output
+
+- Printf:
+  - more sophisticated output than echo.
+  - printf "hello\n".
+  - printf "hello %s, how are you\n"$USER
+  - printf "p%st\n" a e i o u
+  - printf "|%20s |%20s |%20s |\n" $(ls)
+  - For help: help printf, man printf
+
+- read:
+   - reads input into a variable
+   - "read x"
+   - no variable specified? will use REPLY
+   - -n or -N number of chararcters to read
+   - -s will suppress output
+   - -r disallows escape seq, line continuation
+   - can splits into multiple varible
+	-read x y
+        -input "1 2 3"
+
+   read;echo $REPLY
+//////////////////////////
+	#!/bin/bash
+	echo -n "Are you sure (Y/N)? "
+	answered=
+	while [[ ! $answered ]]; do
+		read -r -n 1 -s answer
+		if [[ $answer =[Yy] ]];then
+		answered="yes"
+		elif [[ $answer =[Nn] ]];then
+		answered="No"
+		fi
+	done
+	printf "\n%s\n" $answered
+
+Standard Stream
+ - input,output,error
+ - Represented by number(file descriptor) or special file.
+ - 0: standard Input(stdin)
+ - 1: standard Output(stdout)
+ - 2: standard Error(stderr)
+
+	Redirection
+	- Input direction: <	
+	- Output direction: >
+	- pipes ls | grep x
+	Redirection 2
+	- specific stream with N>
+		"cmd 2>dev/null" discards all errors
+	- specific stream with >&N
+	- sending both error and output to single file
+		cmd > logfile 2>&1
+
+
+::~Control Flow~::
+
+-Loops
+-Break and continue
+-case
+-compound stmts
+
+	->while:
+		while test;do                      
+			code to repeat
+		done
+	->untill:
+		untill test;do
+			code to repeat
+		done
+
+
+target=$(($Random % 100))
+guess=
+untill [[$guess -eq $target ]];do
+    read -p "Take a guess" guess
+    if [[$guess -lt $target]];then
+	echo "Higher!"
+    elif [[$guess -gt $target]];then
+	echo "Lower!"
+    else
+	echo "You found it!!"
+    fi
+done
+
+exit 0
+
+	->for
+	 for var in words;do
+		//code to repeat
+	 done
+	
+		mvext::
+			if [[ $# -ne 2]];then
+				echo "you need exactly tow arguments"
+			fi
+			for i in *$1;do
+				base=$(basename "$f" "$1")
+				echo mv "$f" "#{base}$2"
+			done
+
+	touch {a..h}.txt
+	
+
+	->for ((INIT;TEST;UPDATE));do
+		//loop code
+	  done
+	
+
+	->Break
+	->Continue
+
+	->case WORD in
+		PATTERN1)
+		code for pat1;;
+		PATTERN2)
+		code for pat1;;
+		.....
+		PATTERNN)
+		code for patn;;
+	 esac
+		example::
+			case $1 in 
+			 cat)
+				echo "meow"
+			   *)
+				echo "unknown animal"
+			esac
+
+	Command Groups
+	-> will group them in single stmt.
+	-> can use I/O redirection for whole group.
+	-> return status last command in group.
+
+	|| and &&
+	 
+	[[ $# -ne 2 ]] && { echo "need exactly two arguments" >&2;}// replacement for IF
+
+	
+
+::~Advance Variables~::
+    - integer variables	
+	- declare -i num
+		num = "5+4"
+		echo $num #value 9
+	- let n=100/2
+	- ((p=x/100))
+	- ((p=$(ls|wc -l)*10))
+
+	declare -ir target = $(( ($RANDOM %100) + 1 ))
+	declare -i guess=0
+	
+	untill ((guess == target));do
+		read -p "Take a guess: " guess
+		((guess)) || continue
+		if((guess < target ));then
+			echo "Higher!"
+		elif((guess > target ));then
+			echo "Lower!"
+		else
+			echo "You Found It!"
+		fi
+	done
+
+	declare -r var//constant variable
+
+	#exporting variables
+	 - declare -x var="outer"
+	 - export var
+
+:_Arrays_:
+	storing  value
+	 -> x[0]="Ram"
+	retrive value
+	 -> ${x[0]}
+	 -> ${x[@]} or ${x[*]}
+	 count no. of element in array=${#array[@]}
+	
+	declare -A array
+	arr=(this is array)
+	declare -p arr
+	declare -a arr='([0]="this" [1]="is" [2]="an" [3]="array")'
+
+
+:~Special Variables~:
+ - postional parameters
+   - holds the nth command line argument $1,$2...
+   - above 9 use braces : ${10}
+ - $0 holds script name
+
+ - $@ equivalent to $1,$2...,$N
+ - $* equivalent to $1,$2...,$N
+ - $# holds no. of arguments passed
+
+Shift
+ - Remove the first argument
+ - All postional parameters shift
+	- $2 -> $1
+ 
+ - $# lowered by 1.
+
+Getopts
+ -parse argument lists
+	-OPTARG,-OPTIND
+
+	::~Shell Functions~::
+
+  -Functions
+   -declare
+   -use
+   -return 
+   -export
+
+   function name(){...}
+
+   sum(){
+	return $(( $1 + $2 ))
+   }
+   sum 4 5
+   echo $?
+
+  export function:: export -f fun   
+
+  fun(){...}>&2 //function redirection
+
+  	::-Fun With Strings-::
+ 
+  ${var#pattern} #remove shortest possible match from begining.	
+  ${var##pattern} #remove longest possible match from begining.
+	
+  ${var%pattern} #remove shortest possible match from ending.	
+  ${var%%pattern} #remove longest possible match from ending.
+
+  ${var/pattern/string} #search and replace
+
+  Default value
+  -> ${var:-value}
+  -> ${var-value}
+  
+  -> ${var:=value}
+
+  -> =~ does RE matching
+  -> ? matches token 0 or 1 time.
+  -> * matches token any no. of times.   
+  -> ^ matches token start of string.
+  -> $ matches token end of string.
+
+   ::ENd of Options::	
+	--
+
+:--Many Ways to Run Your Script--:
+ - bash myscript
+ - bash -x myscript
+ - background running with &:: myscript &
+ - long-running script: nohup myscript &(keeping script running when you exit terminal)
+ - nice myscript(run in low pro=iority)
+ - nice nohup myscript &
+
+
+=> tail -f logfile
+ 
+ - At:exec script at specific time
+ - cron: scheduling
+
+ :~Customize Bash Behaviour~:
+
+ -set: set -x print
+	   -u
+           -n
+           -v
+           -e .... and more
+
+ -shopt: -s set,-u unset
+	shopt -s nocaseglob
+		 extglob
+		 dotglob 
+                 noclobber  
+  
+.................................................................

@@ -1,0 +1,26 @@
+movieinfo 8081
+
+ratingdata 8082
+
+moviecatalog 8083
+
+eurekaservice
+
+mvn install -Dmaven.test.skip=true
+
+eureka.client.serviceUrl.defaultZone=http://eurekaserver:8761/eureka
+
+
+curl -X POST "http://movieinfo:8081/catalog/addmovie" -H "accept: */*" -H "Content-Type: application/json" -d "{ \"description\": \"demo desc\", \"movieId\": 0, \"name\": \"demo\"}"
+
+"http://movieinfo:8081/movies/addmovie"
+
+
+ http://movieinfo:8081/movies/getAll
+
+[1:26 PM] Anand Kumar
+    
+
+kubectl delete --all pods --namespace=default
+
+

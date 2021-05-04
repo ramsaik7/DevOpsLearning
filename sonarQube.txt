@@ -1,0 +1,83 @@
+::~SonarQube-::
+
+Its an open source static testing analysis software. It is used by developers to manage source code
+quality and consistency. some  of the code quality checks are:
+ -Potential Bugs
+ -Code defects to design inefficienies
+ -code duplication
+ -lack of test coverage
+ -Excess complexity
+
+
+Tricky Issues::
+ - Detect Bugs
+ - code smells
+ - security vulnerability
+ - Active Rules Needed
+ - Execution Path
+
+
+Enchances WorkFlow(Ci/Cd):
+ - Automated Code analysis.
+ - Get access through webhooks and api
+ - integrated GitHub
+ - Analyse branches and decorate pull request.
+
+Builts in Methods:
+ - Discover memory leaks.
+ - Good visualizer
+ - Enforces quality Gate.
+ - Digs into issues.
+ - plugins for IDE's
+
+---------------------------------------------------------------------------------------------------
+
+Download::
+- Sonarqube server
+- Sonar runner (sonar scanner)
+Set up Enviroment variable::
+- to sonar scanner
+- scanner config properties files ::
+
+ go to path of sonar qube server upto bin/os-version
+  >> start sonar.bat
+
+ java project(src code location)>> sonar runner.bat
+
+
+ SonarQube Scanner for MAVEN--
+
+ + <pluginGroups>
+    	<pluginGroup>org.sonar.scanner</pluginGroup>
+   </pluginGroups>
+
+ + <profile>// add configuration
+	
+   <profiles>
+
+ + mvn sonar:sonar
+   Runn Src analayse and then send report to sonarqube server
+
+ + for gradle:: add plugin in gradle then run->gradle sonarqube
+
+-------------------------------------------------------------------------------------------------------
+ Hands-on Linux::->
+ 
+ + wget https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-7.6.zip
+   wget https://sonarsource.bintray.com/Distribution/sonar-scanner-cli/sonar-scanner-4.5.zip
+
+
+cd /opt
+./sonar.sh stop
+
+
+	
+
+
+8368837055a00bc13158c8a6f729805d35fcd9d9
+  
+
+
+
+
+

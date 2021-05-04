@@ -1,0 +1,308 @@
+         ~::Ansible::~
+
+ - Configuration Management - Orchestration - Deployment
+
+ * yum install ansible -y
+ * ansible host
+ * ansible playbook(written in yaml)
+   sample.yaml
+ * ansible-playbook sample.yaml --syntax-check
+ * ansible-playbook sample.yaml 
+
+ AD-HOC Command::
+ ansible all -m ping
+
+ 
+ Variable Precedence::   
+
+
+
+----------------------------------------------------------------------------------------------------
+ Go to aws account --> Create three EC2 instances.
+ one instance name - Ansible server and remaining two with nodes.
+ 
+ * wget https://****
+ * ls
+ * yum install epel-release-label-7.***.rpm
+ * yum install git python python-level python-pip openssl anisble -y  
+ * Now go to host file and paste private-ip address of node 1 and node 2:: vi /etc/ansible/host
+ * Now the host file is only working after updating ansible cfg file.
+ * vi /etc/ansible/ansible.cfg
+   uncomment::
+   inventory = /etc/ansible/hosts
+   sudo-user = root
+ 
+ Now create a one user in server and nodes(three instances)::
+ - adduser ansible
+ - passwd ansible
+ - su - ansible
+ - visudo(it is a file contains user and priviledge)
+   and make ansible user to ALL.
+	user ALL=(ALL) NOPASSWD: ALL
+ - Now do above things to other nodes also.
+ - Now go to ansible server and install httpd package as a ansible user :: sudo yum install httpd -y
+ - Now establish connection between server and node
+      - Go to ansible server:
+        [ansible@ip]$ ssh 172.31.41.240
+        Permission Denied
+ - Now we have to do some changes sshd-config file in ansible server 
+ - [root@ip]# vi /etc/ssh/sshd_config
+   (Do some changes and save file)
+   (Do this work in node1 and node2 also)
+   ---service sshd restart
+ Now verify in ansible server-
+ - su - ansible
+ - ssh 172.31.41.240
+ Now it ask for pwd enter after go inside node1
+ 
+ -----------------------------------------------------------------------------------------------
+ 
+  Now go to ansible server and create keys:
+  [ansible]$ ssh-keygen
+  [ansible]$ ls -a
+  o/p - .ssh
+  [ansible]$ cd .ssh/
+  [ansible]$ ls
+  o/p- id_rsa, id_rsa.pub
+  Now copy public key in both Ip::
+  [ansible]$ ssh-copy-id ansible@ipnode1   
+  [ansible]$ ssh-copy-id ansible@ipnode2
+  
+  Now go to ansible server
+  [ansible]$ cd ..
+  [ansible]$ ssh node1_ip
+  Now, you will enter into node1 without pwd.
+
+  + Concept is Trust Relationship-------------------------
+   
+  HOST Patterns:-->
+  -> "all" pattern refers to all machines in inventory
+  -> ansible all --list-hosts
+  -> ansible <groupname> --list-hosts
+  -> ansible <groupname>[0] --list-hosts
+  -> groupname[0] - picks first machine of group
+  -> groupname[-1] - picks last machine of group
+  -> groupname[1:5] - picks machine of group of specific range.
+ 
+
+
+--------------------------------------------------------------------------------------------------------
+ 
+ - AdHoc Commands
+	+ (AdHoc means Temporary)
+        + (Simple Linux Commands)
+        + (There is no Idempotency)
+ - Modules
+	+ written in YAML format.
+ - PlayBooks
+	+ More than one module is called playbook. *(Module is like a page and playbook is book)
+	
+ + AdHoc Commands::-
+ - Ad-Hoc commands are commands which can be run individually to perform quick functions.
+ - These AdHoc commands ar3e not used for configuration management and deployment because these commands are of one time usage.
+ - These AdHoc commands uses the /usr/bin/ancible command line tool to automate the tasks.
+ - go to ansible server
+  - ansible demo -a(argument) "ls"
+  - ansible demo[0] -a "touch filez"
+  - ansible all -a "touch filez"
+  - ansible demo -a "ls -al"
+  - ansible demo -a "sudo yum install httpd -y" or  - ansible demo -ba "yum install httpd -y"
+  - ansible demo -ba "yum remove httpd -y"
+
+ + Ansible Modules::-
+ - Ansible ships with number of modules(called module library), that can be executed directly on hosts or through playbooks.
+ - Your library of modules can be reside on any machine and there are no servers,daemons or database required.
+ - where ansible module stored?? /etc/ansible/hosts
+  - ansible demo -b -m yum -a "pkg=httpd state=present"               *(install=present, remove=absent, update=latest)
+  - ansible demo -b -m yum -a "pkg=httpd state=latest"
+  - ansible demo -b -m yum -a "pkg=httpd state=absent"
+  - ansible demo -b -m serivce -a "pkg=httpd state=started"
+  - ansible demo -b -m user -a "name=raj"
+  - ansible demo -b -m copy -a "src=filex dest=/temp"
+  - ansible demo -m setup
+  - ansible demo -m setup -a "filter=*ipv4*"
+
+  + Playbook::-
+  - Playbook in ansible written in YAML Format.
+  - It is human readable data serialization languages,commonly used for configuration files.
+  - playbook is like a file where you writecode. consists of vars,tasks,handlers,files,templates and roles.
+  - Each playbook is composed of one or more module in list.module is collection of configuration files.
+  - Playbooks are divided into many section like 'Target section':Defines host against which playbook task has to be executed.
+     'Variable Section':Defines Variable,'Task Section':Order in which of task to be executed.
+  - For Ansible , nearly every YAML file starts with a list.
+  - Each item in the list is a list of key-value pair commonly called dictionary.
+  - All YAML files begin with "---" and end with "..." .
+  - All members of list lines must be begin with same indentation but starting with "-".
+  
+  For Example::
+
+	---#list of fruit
+		fruits:
+                - Mango
+		- Strawberry
+		- Orange
+		- Banana
+        ---#list of customer
+	Employee:
+      	 name: Ram
+ 	 job: Engineer
+	 Skill: Devops   
+ 
+  Extension of playbook is .yml
+
+  Demo:
+   -> Go to Ansible Server
+   -> Now create one Playbook
+      vi target.yml
+
+   ---# Target PlayBook
+   - hosts: demo
+     user: ansible
+     become: yes
+     connection: ssh
+     gather_facts: yes
+   
+   Run the file:: ansible-playbook target.yml
+ 
+   ---# 
+   - hosts: demo
+     user: ansible
+     become: yes
+     connection: ssh
+     task: 
+      - name: install httpd on linux
+	action: yum name=httpd state=present
+
+	
+   Variable:
+    - Ansible uses variables which are defined previously to enable more flexiblity in playbooks and
+      roles.They can loop through set of given values access various information like host name of a
+      system and replace certain string in templates with specific values.
+    - put variable section above tasks so that we define first and use it later.
+   
+  Now go to ansible server and create a playbook::
+  
+  vi vars.yml
+   
+  --- # my variable playbook
+  - hosts: demo
+    user: ansible
+    become: yes
+    connection: ssh
+    vars: 
+      program: httpd
+    task:
+      - name: install http server
+        action: yum name='{{program}}' state=installed
+
+    ansible-playbook vars.yml
+
+ Handler Section::
+ -> A Handler is excatly same as task but it will run when called by another task (OR)
+    -> Handlers are just like a task in a ansible playbook but are only run if the task contains a 
+       notify directive and indicate that it changed something.
+
+  vi handler.yml
+  
+  ---# Handlers playbook
+  - hosts: demo
+    user: ancible
+    become: yes
+    connection: ssh
+    tasks:
+     - name: install httpd server
+       action: yum name=httpd state=installed
+       notify: restart httpd
+    handlers:
+     - name: restart httpd
+       action: service name=httpd state=restarted
+
+
+ --=DRY RUN::
+  - Check whether playbook is formatted correctly.
+  - ansible-playbook handlers.yml --check
+
+ LOOPs::->
+ - Sometime you have to do multiple repeatative task, In computer programming is called loops.
+   common ansible loops include changing owenership on serval file/or directories with file modules,
+   creating multiple users with user module and repeating a polling step untill certain result reached.
+
+  vi loops.yml
+
+  ---# My Loops PlayBook
+  - hosts: demo
+    user: ansible
+    become: yes
+    connection: ssh
+    tasks: 
+       - name: add a list of user
+         user: name='{{items}}' state=present
+         with_items:
+           - Ram
+           - Yash
+           - Saleem
+           - Anand       
+
+  -::Conditions::-
+
+   - whenever we have different different scenarios we put conditions according to scenarios.
+   - when statement: sometimes you want to skip a particular command on a particular node.
+
+   ---# condition playbook
+   - hosts: demo
+     user: ansible
+     become: yes
+     connection: ssh 
+     tasks:
+      - name: install apache on debian
+        command: apt-get -y install apache2
+        when: ansible_os_Family=="Debian" 
+      - name: install apache on redhat
+        command: yum -y install httdp
+        when: ansible_os_family=="RedHat"  
+
+  -::Vault::-
+    
+   - Ansible allows keeping sensitive data such as passwords or keep in encrypted files rather than plain text in your playbook.
+   - creating a new encrypted playbook
+        ansible-vault create vault.yml
+   - Edit encrpted playbook
+        ansible-vault edit vault.yml
+   - To change password
+        ansible-vault rekey vault.yml
+   - To encrypt an existing playbook
+        ansible-vault encrypt vault.yml
+   - To Decrypt an playbook
+        ansible-vault decrypt vault.yml
+
+ -::ROlES::-   
+   - We can use two techinique for running a Act of tasks:-includes and roles.
+   - Roles are good for organising tasks and encapsulating data and needed accomplish these task.
+   - We can organise playbook into a directory stucture called Roles.
+   - Adding more and more functionality to playbook will make it difficult to maintain in single file. 
+   
+  + Default -> It stores data about role/application. Default variables eg: if you want to run port 80 or 8080 then variable needs to defined in its path.
+  + Files -> It contains files need to be transfered to remote vm(static vm).
+  + Handlers -> They are triggers or task we can segregate all handlers required in playbook.
+  + Meta -> This is directory contains files that establish role dependencies. Eg-Autor name, supported platform, dependency if any.
+  + Tasks -> It contains all the tasks that is normally in the playbook. Eg- installing packages andd copies files.
+  + Vars -> variables for role can be specified in the directory and used in your configuration files both vars and default stores variable.
+
+  Demo::
+  - mkdir -p playbook/roles/webserver/tasks
+  - tree
+  - cd playbook
+  - touch roles/webserver/tasks/main.yml
+  - touch master.yml
+  - vi roles/webserver/task/main.yml
+  -    - name: install apache
+         yum: pkg=httpd state=latest
+
+  - vi master.yml
+       - hosts: all
+         user: ancible
+         become: yes
+         connection: ssh
+         roles: 
+            - webserver
+   - ansible-playbook master.yml

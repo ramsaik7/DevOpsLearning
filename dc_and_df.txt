@@ -1,0 +1,64 @@
+
+version: '3'
+services:
+ mysql-app:
+  image: mysql:5.7
+  container_name: mysqlcontainer
+  ports:
+   - "3306:3306"
+  #expose:
+  # - "3306"
+  restart: always
+  environment:
+   - MYSQL_USER=root
+   - MYSQL_ROOT_PASSWORD=Mind@India#19
+  #volumes:
+  # - "./conf.d:/etc/mysql/conf.d:ro"
+  
+  networks:
+   - springbootjava
+ flightapplication:
+  #image: my-javaspring-imagent
+  build: .
+  ports:
+   - '8081:8081'
+  #restart: always
+  depends_on:
+   - mysql-app
+  environment:
+    RDS_HOSTNAME: mysql-app
+    RDS_PORT: 3306
+    RDS_USERNAME: root
+    RDS_PASSWORD: Mind@India#19
+  networks:
+   - springbootjava
+networks:
+ springbootjava:
+  driver: bridge
+
+
+---------------------------------------------------------------DockerFile--------------------------------------------------
+
+#Base Image
+
+FROM openjdk:8
+
+# Create DIR
+
+RUN mkdir -p /usr/src/myapp
+
+# COPY APPLICTAION COde
+
+COPY target/airline-0.0.1-SNAPSHOT.jar /usr/src/myapp
+
+# Setup Working DIR
+
+WORKDIR /usr/src/myapp
+
+#EXPOSE
+
+EXPOSE 8081
+
+# Start the Bot Service
+
+CMD ["java", "-jar", "airline-0.0.1-SNAPSHOT.jar"]

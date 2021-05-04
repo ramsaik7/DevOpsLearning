@@ -1,0 +1,48 @@
+spring.datasource.driver-class-name=com.mysql.jdbc.Driver
+spring.datasource.url=jdbc:mysql://${RDS_HOSTNAME:localhost}:${RDS_PORT:3306}/flightuserdb?createDatabaseIfNotExist=true
+#spring.datasource.url=jdbc:mysql://172.18.0.2:3306/flightuserdb?createDatabaseIfNotExist=true
+spring.datasource.username=root
+spring.datasource.password=Mind@India#19
+spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.MySQL8Dialect
+spring.jpa.properties.hibernate.id.new_generator_mappings = false
+spring.jpa.properties.hibernate.format_sql = true
+spring.jpa.properties.hibernate.hbm2ddl.auto = update
+spring.jpa.show-sql=true
+
+
+version: '3'
+services:
+  mysql-app:
+    image: mysql:5.7
+    #container_name: mysqltest
+    #ports:
+    #  - "3306:3306"
+    expose:
+      - "3306"
+    environment:
+      - MYSQL_USER=root
+      - MYSQL_ROOT_PASSWORD=Mind@India#19
+    volumes:
+      - "./conf.d:/etc/mysql/conf.d:ro"
+    restart: always
+    networks:
+      - springbootjava
+  petclinic:
+    image: my-javaspring-imagent
+    #build: .
+    ports:
+      - '8080:8080'
+    restart: always
+    link:
+      - mysql-app
+    environment:
+      RDS_HOSTNAME: mysql-app
+      RDS_PORT: 3306
+      RDS_USERNAME: root
+      RDS_PASSWORD: Mind@India#19
+    networks:
+      - springbootjava
+networks:
+  springbootjava:
+~
+

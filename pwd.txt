@@ -1,0 +1,38 @@
+#!/bin/bash
+
+read -p  "Enter a Password: " password
+countAND(){
+    val=2
+    for var in $(seq 1 ${#password});do
+        echo $var
+        if [[ $var = "&" ]];then
+            val=1
+            return $val
+
+        fi
+
+    done
+ 
+
+}
+passwordMatch(){
+    countAND $password
+    getval=$?
+    echo $getval
+    if [[ ${#password} -ge 8 ]];then
+        if [[ $password == *[0-9]* ]];then
+            if [[ $password == *[@#$%*+-=]* || getval = 1 ]];then
+                 echo "Password Successfully Matched"
+            else
+                 echo "Must contain at least one of the following non-alphabetic characters: @, #, $, %, &, *, +, -, ="
+            fi
+         else
+             echo "Must contain at least one numeric character"
+        fi
+    else
+        echo "Minimum length of 8 characters"
+    fi
+}
+
+passwordMatch $password
+

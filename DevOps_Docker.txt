@@ -1,0 +1,349 @@
+				       ::~Docker~::
+
+ - Container is like a VM.
+ - Docker(Docker Engine) is a tool which create the VM.
+ - Docker is advance version of virtualization(containerization).
+ - 
+		
+                --containers---containers------------
+		------------Docker Engine------------
+		------------OS-----------------------
+		------------HardWare-----------------
+	
+	*container use os of system's(OS) doesn't have its os and its light-weight.
+
+ -  
+
+	(container is the running state of image)
+
+	*(for windows os enable hyper-v and virtualizations and docker runs only on windows 10 and pro and enterprise edition)
+	*(mainly docker used for linux os)
+
+ - Advantages of Docker:
+    - No pre-allocation of RAM.
+    - less cost.
+    - CI efficiency:Docker enables you to build a container image and we can use image across every deployment process.
+    - light weight(less resources use).
+    - It can run on physcial H/W or virtual H/W or on cloud.
+    - You can reuse the image.
+    - very less time to create containers.
+    
+ - Disadvantage of Docker:
+    - Docker is not good solution for application that requires rich GUI.
+    - Difficult to manage large amount of container.
+    - Docker does not provide cross platform compatibility.  
+    - Docker is suitable when devlopment os and testing os same.
+    - No solution for data recovery and backup. 
+ 
+  Docker Ecosystems->Set of softwares or packages.
+  
+  Docker Engine/Daemon/server:
+      - Docker daemon runs on host os.
+      - Responsible for running containers to manage docker services.
+      - Docker Daemon can communicate with other daemons.
+  
+  Docker Client:
+      - Docker user can interact with Docker Daemon through Docker Client.
+      - Docker client uses commands and REST API's.
+      - Docker Daemon interact throug Docker client.
+      - Its posssible for Docker client to communicate more than one Daemon.
+  
+  Docker Host:
+      - provides Enviroment to exec and run application.
+      - It contains the docker daemon,network and storage. 
+  
+  Docker Hub:
+      - Docker Resitry/Hub manages and stores the docker images.
+      - Two types of registry: -public registry -private registry
+      
+  Docker Image/template:
+       - These are read only bianry template used to create docker container.
+       - single file with all dependencies and conf. to run a program.
+  
+  Docker Compose:
+	 
+  => Ways to create Docker Images:
+    - Create an image from Docker file.
+    - Create an image from existing container. 
+    - Take an image from Docker Hub.
+
+
+  Docker Container:
+   - Holds entire package.
+   - we can say image is template and container is copy of template.
+   - Container are running instance of image.
+
+
+
+::~Basic Commands in DOCKER~::
+
+   *yum install docker -y [to install docker]
+    which docker
+    docker -v
+    docker info
+    service docker status
+    service docker start
+
+  - to see all images in local machine: docker images
+  - to find images in docker hub : docker search jenkins
+  - to download image from docker hub to local machine: docker pull centos
+  - to give name to container: docker run -it --name ram ubuntu /bin/bash		 
+				   (create + start) (interactive terminal)
+  - to check service is start or not: service docker status
+  - to start container: docker start ram
+  - to go inside container: docker attached ram
+  - to see all container: docker ps -a
+  - to see running container : docker ps(process status)
+  - to stop container: docker stop ram
+  - delete container: docker rm ram
+
+   cat /etc/os-release
+   exit
+
+  * __DockerFile Component__ *
+
+  - create one container first:
+	docker run -it --name Ram ubuntu /bin/bash	
+  - cd tmp/
+  - touch myfile 
+  - exit
+  - docker diff Ram(container name)
+  - docker commit Ram(container name) updateImage(image name)
+  - docker images  
+  - docker run -it --name RajContainer updateImage /bin/bash
+  
+  Dockerfile:
+   - A DockerFile basically a text file it contains set of instructions.
+   - Automatation of Docker Image creation.
+
+   Docker components:
+	- FROM : for base image this command is top of Dockerfile.
+        - RUN  : to execute command,it will create a layer in image.
+        - MAINTAINER: Author/Owner
+        - COPY : copy files from local system(docker vm),we need provide src and dest.
+        - ADD : similar to copy but it provide a feature to download from internet and also extract file at docker image side.
+        - EXPOSE : to expose ports.
+        - WORKDIR : to set working directory for container.
+        - CMD : exec commands during container creation.
+        - ENTRYPOINT: similar to CMD but higher priority than CMD.
+        - ENV : enviroment variables 
+        - ARG :
+
+steps:
+1.create a Dockerfile.
+2.Add instruction in Dockerfile.
+3.Build Dockerfile to create image.
+4.Run image to create container.
+
+    vi Dockerfile
+---
+    FROM ubuntu
+    RUN echo "Hello Docker" >/temp/testfile
+
+---
+   docker build -t myImg .
+               (tag)
+   docker ps -a
+   docker images
+---
+   docker run -it --name mycontainer myImg /bin/bash
+
+--- cat /temp/testfile
+
+
+..............................................
+
+FROM ubuntu
+WORKDIR /tmp
+RUN echo "Hello" > /temp/testfile
+ENV myname Ram
+COPY testfile /tmp
+ADD test.tar.gz /tmp
+
+---------------------------------------------------------------------------------------------
+
+	::~Docker Volume~::
+
+
+ - volume is simply directory in our container.
+ - Even if we stop our container , volume is still accessible.
+ - volume will be created in one container.
+ - you can declare a directory as volume only while creating container.
+ - you can't create volume for existing container.
+ - you can share one volume accross any number of container.
+ - volume will not included when you update image.
+ - you can mapped volume in two ways:
+	- container to container
+ 	- host to container
+
+ Benefits:
+ - Decoupling container from storage.
+ - share volume among different containers.
+ - Attach volume to container.
+ - on deleting container volume does not deleted.
+
+
+ Steps::
+1. Create Dockerfile and write
+   FROM ubuntu
+   VOLUME ["/myvolume"]
+   
+   docker build -t myimage .
+
+   docker run -it --name container1 myimage /bin/bash
+
+   Now do ls you can see myvolume
+ 
+ Now share volume with another container
+	container1 <--> container2
+
+   docker run -it --name container2 --privileged=true --volumes-from container1 ubuntu /bin/bash
+
+   After creating container2 , myvolume is visible  whatever you do in one volume you can see it from other volume
+
+   -> touch /myvolume/samplefile
+   -> docker start container1
+   -> docker attach container1
+   -> 
+    
+
+Without docker file::
+
+ -> docker run -it --name container3 -v volume2 ubuntu /bin/bash
+ -> docker run -it --name container4 --privileged=true --volumes-from container3 ubuntu /bin/bash
+ 
+
+Host-container:
+    -> verify files in /home/ec2-user
+    -> docker run -it --name hostcont -v /home/ec2-user:/ram --priviledge=true ubuntu /bin/bash
+    
+
+
+-> docker volume ls
+-> docker volume create <vol-name>
+-> docker volume rm <vol-name>
+-> docker volume inspect <vol-name>
+-> docker volume prune {removes unused volumes}
+
+	          
+                                  ::-Docker Port Expose-::
+ 
+->  Lab Practical:
+    
+    -> sudo su
+    -> yum update -y
+    -> yum install docker -y
+    -> service docker start
+    -> docker run -td --name techserver -p 80:80 ubuntu
+    -> docker ps
+    -> docker port techserver
+    -> docker exec -it techserver /bin/bash [same as docker attach but exec will create new process]
+    -> apt-get update
+    -> apt-get install apache2 -y
+    -> cd /var/www/html
+    -> echo "Hello" > index.html
+    -> service apache2 restart
+    -> docker run -td --name myjenkins -p 8080:8080 jenkins
+
+
+      docker run -d -P jenkins (runs in arbitary port)
+      docker stats
+
+	
+
+
+
+
+
+
+........................................................................................
+                                    ::~Docker Hub~::
+
+ - sudo su
+ - yum update -y
+ - yum install docker -y
+ - service docker start
+ - docker run -it ubuntu /bin/bash
+ - docker commit container1 image1
+
+ ---------------create docker hub account-------------------
+ 
+ - docker login
+ - docker tag image1 dockerid/imagename
+ - docker push dockerid/imagename
+
+ ------------now you can see image from docker hub-----------
+
+ - docker pull dockerid/newimage
+ - docker run -it dockerid/newimage /bin/bash
+
+------------------------------------------------------------------------------------------
+
+(stop all containers)
+ - docker stop $(docker ps -a -q)
+
+(delete all containers)
+ - docker rm $(docker ps -a -q)
+
+(delete all images) 
+ - docker rmi -f $(docker images -q)
+
+
+chmod 777 /var/run/docker.sock
+NetData docker image monitoring
+
+-------------------------------------------------------------------------------------------
+
+Deploying an angular app::
+
+
+Step-1:
+	git clone https://github.com/samirakumarpanigrahi/Angular201.git
+Step-2 :
+	Goto my Angualar Project Directory
+	cd Angular201/
+	
+Step-3:
+	Creating a DockerFile:
+	vi Dockerfile
+		FROM node:12.0
+        	MAINTAINER K RAM SAI
+		WORKDIR /usr/src/       
+        	RUN npm install -g @angular/cli@
+  		COPY . /usr/src/               
+        	RUN npm install
+        	CMD ng serve --host 0.0.0.0 --port 4200
+
+
+Step-4: 
+		=>docker build -t angular-app-image .(Build an Docker Image)
+
+		=>docker images(to see list of docker Images)
+
+		=>docker run -d -p 4200:4200 angular-app-image(to run docker image)
+
+		=>docker ps(to see running process)
+
+step-5:  
+	Finally, Angular Application successfully Deployed using Docker.
+
+
+ctrl pq
+
+ps -ef | grep -i jenkins
+
+Docker Network ::
+
+docker network ls 
+
+docker network inspect networkname 
+
+docker network create –-driver drivername name
+   - docker network create -d bridge my-bridge-network
+
+
+docker container run-dt --name container-name imagename -p 8080:8080 networkname
+
+
+docker container run -dt --network networkname --name container-name imagename
+

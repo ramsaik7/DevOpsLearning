@@ -1,0 +1,93 @@
+pipeline {
+    agent any 
+    
+    stages {
+        stage('git check-out') { 
+            steps {
+                 git branch: 'main', changelog: false, poll: false, url: 'https://github.com/KRams2019/samera-backend.git'
+            }
+        }
+  
+   stage('change directory'){
+       steps{
+          script{
+          dir("myencryption/encryption"){
+          sh  "pwd"
+          }
+        }
+    }
+   }
+   
+        stage('Compile') { 
+            steps {
+                script{
+                    dir("myencryption/encryption"){
+                    sh  "pwd"
+                sh 'mvn clean compile'
+                }
+              
+                }
+            }
+        }
+        
+         stage('Clean Verify') { 
+            steps {
+                script{
+                    dir("myencryption/encryption"){
+                    sh 'mvn clean verify'
+                    }
+                }
+            }
+        }
+        
+         stage('Build') { 
+            steps {
+                script{
+                    dir("myencryption/encryption"){
+                    sh 'mvn package'
+                    }
+                }
+            }
+        }
+         stage('Sonar Code Analysis') { 
+            steps {
+                script{
+                    dir("myencryption/encryption"){
+                    sh 'mvn sonar:sonar -Dsonar.host.url=http://rlzvt92632dns.eastus2.cloudapp.azure.com:9000 -Dsonar.login=8368837055a00bc13158c8a6f729805d35fcd9d9' 
+
+                    }
+                }
+            }
+        }
+         stage('Junit Result Archieve') { 
+            steps {
+                script{
+                    dir("myencryption/encryption"){    
+                    junit 'target/surefire-reports/TEST-*.xml'
+                    }
+                }
+            }
+        }
+       
+        stage('artifacts-build') { 
+            steps {
+                  script{
+                    dir("myencryption/encryption"){  
+               archiveArtifacts artifacts: 'target/*.?ar'
+                    }
+                }
+            }
+        }
+        
+      
+         stage('archival') { 
+            steps {
+              publishHTML([allowMissing: true, alwaysLinkToLastBuild: false, keepAll: true, reportDir: 'target/site/jacoco/', reportFiles: 'index.html', reportName: 'Code Coverage', reportTitles: ''])
+            }
+        }
+    }
+}
+
+     
+ 
+        

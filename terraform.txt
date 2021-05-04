@@ -1,0 +1,195 @@
+TerraForm::
+
+ - aws configure
+   (provide access id and token id)
+
+ - download terraform tool.
+  - which terraform >> /usr/local/bin/terraform
+  - mkdir tfexample >> cd tfexample
+  - create a file provider.tf
+
+  provider "aws"{
+   
+    access_key = ${var.awsaccesskey}
+    secret_key = ${var.secretkey}
+    region =  "us-west-2"
+	
+  }
+
+  resource "aws_vpc" "main"{
+    cidr_block = "190.160.0.0/16"
+    instance_tenancy = "default"
+
+    tags{
+     name="main"
+     location="banglore"
+   }
+
+ }
+
+ resource "aws_subnet" "subnet1"{
+    vpc_id = "${aws_vpc.main.id}"
+    cidr_block = "190.160.1.0/24"
+
+    tags{
+     name="subnet1"
+     
+   }
+
+
+--------
+ - terraform init
+ - terraform apply 
+
+
+
+========================================================================================
+
+ :~Terraform Varibles, Data Source,Loops~:
+
+ var.tf
+
+ variable "region"{
+     default="us-west-2"
+ }
+
+  variable "vpc_cidr"{
+     default="190.160.0.0/16"
+ }
+
+ variable "subnet_cidr"{
+     type="list"
+     default= ["190.160.1.0/24","190.160.2.0/24","190.160.3.0/24"]
+ }
+
+ variable "azs"{
+     type="list"
+     default =["us-west-2a","us-west-2b"]
+ }
+
+data "aws_availabilty_zone" "azs"{}
+
+terraform apply
+----------------------------------
+
+loops we can create multiple resources dynamically->
+
+ resource "aws_subnet" "subnet1"{
+    count = "${length(data.aws_availabilty_zone.azs.names)}"
+    vpc_id = "${aws_vpc.main.id}"
+    cidr_block = ${element(var.subnet_cidr,count.index)}
+
+    tags{
+     name="subnet-${count.index+1}"
+     
+   }
+}
+
+
+========================================================================================
+
+* Terraform Map and Lookup
+
+ - variable "region"{ 
+    default="ap-south-1"
+   }
+
+ - variable "ec2-ami"{
+    type="map"
+    default={
+      ap-south-1="ami-*****"
+      us-west-2="ami-*****"
+   }
+
+ } 
+
+
+ resource "aws_instance" "web"{
+   ami = "${loopup(var.ec2-ami,var.region)}"
+   instace_type="t3.micro"
+  tags{
+    name="HelloWorld"
+  }
+ }
+
+==================================================================================================
+
+Resuable Modules in terraform:->
+ ......vpc/network.tf........................
+ resource "aws_vpc" "main"{
+     cidr_block= "${var.vpc_cidr}"
+     instance_tenancy = "${var.tenancy}"
+
+      tags{
+         name="main"
+      }
+ }
+
+
+   resource "aws_subnet" "main"{
+     vpc_id = "${var.vpc_id}"
+     cidr_block= "${var.subnet_cidr}"
+
+      tags{
+         name="main"
+      }
+ }
+
+  output "vpc_id"{
+       value="${aws_vpc.main.id}"
+  }
+...........................................................
+
+..............ec2/instance.tf................................
+
+ resource "aws instance" "web"{
+  count = "${var.ec2count}"  
+  ami = "${var.ami.id}"
+  instance_type="${var.instance_type}"
+  subnet_id = "${var.subnet_id}"
+  
+  tags{
+    Name="Hello World"
+  }
+
+ }
+
+.............................Dev/main.tf....................................
+
+  module "my_vpc"{
+      source       = "../modules/vpc"
+      vpc_cidr     = "192.168.0.0/16"
+      tenanacy     = "default"
+      vpc_id       = "${module.my_vpc.vpc_id}" //from output file in network.tf
+      subnet_cidr  = "192.168.1.0/24"
+  }
+  
+ 
+  module "my_ec2"{
+      source        = "../modules/ec2"
+      ec2_count     = 1
+      instance_type = "t2.micro" 
+      ami_id        = "*********"
+      subnet_id     = "${module.my_vpc.subnet_id}"
+  }
+
+
+................................................................................
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

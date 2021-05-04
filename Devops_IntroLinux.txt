@@ -1,0 +1,306 @@
+Why Org. needs DevOps:
+ Fast Delivery,Higher Quality,Less capex+opex,Reduced Outage.
+
+	#SDLC#
+  Developers->Build----->.exe
+   (git)      (Maven)      |
+		         Test
+		           |
+		          Q.A 
+		           |
+		      Deploy(Onsite)(chef/ancible/docker/puppet)
+		           |	    
+		      Maintainance+(employee Training)
+		           |
+		       Monitoring(NagiOs,AWS cloud Watch)
+
+..........................................
+
+SDLC::
+	Develop->BUild->Test->Q&A(Developer)
+	Deploy->Maintanince->Monitoring()
+
+
+
+
+DevOps Stages:
+
+->version control::maintains version of code.(Git)
+
+->continous Integration::compile,validate,review,unit testing,Integration testing
+
+->continous Delivery:: deploy the build app to test servers
+
+->continous Deployment:: deploying the test app on prod. server for realease
+
+
+
+Devops is a methodology that allows a single team to manage the entire application
+development life cycle that is development,testing,deployment and operations.
+
+Agile drawback-Silos(employees not coperate)
+Agile(Build short,Build often)(sprints)
+(scrum)
+
+	code                      deploy
+build		plan        	         operator
+			release	    
+         test      		  monitor
+
+
+
+-------------------------------------------------------------
+			::Linux::
+
+
+	UNIX:
+	UNICS:uniplexed information and computing services
+	
+	unix v6-1975
+
+
+	unix--  IBM-AIX
+	        Sun Solaris
+		Mac os
+		Hp-Ux
+		Linux(1991)
+
+	Linux+GNU=OS
+	(kernel)[part of os]
+
+	LINUX -----> RHEL,Fedora,Debian,Others(ubuntu,centos,amazon linux,Kali Linux)
+
+->Linux is not a unix derivative.It well written from scratch.
+->Linux distribution is the linux kernal and collection of software together, create an OS.
+
+Features:
+	open source,secure,simplified updates for all feature software
+	light weight,multiuser,multi distribution.
+
+ File System hirarchy:
+	/home= home directory for other user
+	/root= its home directory for root user			  
+	/boot= Its contains bootable files
+	/etc = It contains all conf. files
+	/usr = by default soft. installed in this.
+	/bin = Its contains all commands used by user.
+	/sbin= Its contains commands used by only root user.
+	/opt = Optional application soft. packages.
+	/dev = essential device files,this includes terminal
+		devices,usb or any device attached to systems.
+ 	
+
+	How to create a file:
+	Cat Touch Vi/Vm  Nano
+			(editors)	
+		
+	cat > filename
+	touch file1 file2[empty file]
+	
+	sudo su=sudo user do switch user
+
+	[root@ip]#
+	
+	case sensitive write all in small
+
+CAT:    cat command is one of the most universal tools, yet all
+	it does is copy standard input to standard output.
+
+	create file .............ctrl+d[exit from file]
+        copy files
+	concatenate file
+	tac
+	
+	cat > filename
+	cat >> filename //add some content to existing files
+        cat file1 file2 > all
+	cat file1>file2 //copy
+	
+Touch: [timestamp]
+	create a empty file
+	create multiple empty file
+	change time stamp of file
+	update only access time of file,modify time of file.
+
+ ex:
+	touch file1
+	ls
+	touch file1 file2 
+	ls
+	stat file1
+	touch -a file2(access time change)
+	touch -m file2(modify time change)
+
+	(meta data will change any changes on access and modify)
+
+Vi Editor:
+-A programer text editor
+ vi filea
+ insert i
+ 	----hello-----
+ esc + (:wq or :x) , :q , :q!
+ H J K L or directly arrow button(for navigate)
+ 
+
+Nano:
+nano fileb
+ctrl+x(to out of file)
+
+ll or ls -l(long listing of all file)
+ls -a(hidden files)
+
+history(all commands)
+
+.....................................................
+
+mkdir dirName(make a directory)
+cd dirName(change directory)
+cd ..(Parent directory)
+pwd (present working directory)
+
+touch .file('.' helps to hidden file)
+mkdir .dirName(hidden directory)
+
+cp <srcFile> <destFile>
+mv <srcFile/dir> <dir>
+
+mv oldFile newFile(rename)
+rmdir delete directory
+rm delete file
+
+rmdir -p (remove parent and child)
+
+rm -rf(forcefully delete)
+rm -rp(remove non empty incuding parent and child)
+rm -r(remove empty directory)
+
+
+less file1
+head file1
+tail file1
+more file1
+
+...................................................
+
+useradd ram(add user)
+cat etc/passwd
+
+groupadd myGroup
+cat etc/group
+
+gpassword -a sai myGroup
+gpassword -m anamd,yash,saleem myGroup
+
+
+ln -s file1 softFile
+ln file1 hardFile
+
+tar [clubing all files in single files]
+
+	tar cvf dirx
+
+gzip [compress] 
+	gzip dirx.tar
+
+gunzip 
+	dir tar.gz
+
+wget <url>(download any file)
+
+
+
+-yum install tree
+-mkdir -p dirx/diry/dirz
+
+-useradd karri
+-cat /etc/passwd
+-groupadd myGroup
+-cat /etc/group
+
+-useradd dilip
+-useradd sanjay
+
+-gpasswd -a karri myGroup
+-gpasswd -m dilip,sanjay myGroup
+
+-cat /etc/group
+
+-cat >> file1
+-ln -a file1 softLinkFile1
+-ls -l
+
+-cat softLinkFile1
+
+-ln file2 hardLink2
+
+[hardlink normal kind of file]
+-cat >> hardLink2
+-cat file2
+
+
+-softLink vs HardLink
+
+-tar -cvf dirx.tar dirx
+           (dest)  (src)
+
+-gzip dirx.tar [compress]
+
+-gunzip dirx.tar.gz
+
+-tar -xvf dirx.tar 
+
+-wget <url>
+-ls
+-yum install <fileName>
+
+-rm -rf *(remove all files)
+-------------------------------------------------------------------
+Access Mode/Permission
+
+	r 4 to display the content      to list content
+	w 2 to modify 			to create or remove	
+        x 1 to execute			to enter into directory
+	
+	
+
+	10 character long:
+	-/d/l rwx r_x r__ 
+	(file/directory/link) (root user/admin) (group) (other users)
+
+
+
+	-/d/l rwx r_x r__  1 root root 0 date time name
+			   (symb. link) (owner) (group) (filesize)
+
+	
+
+	commands:
+		[rwx(4+2+1)=7]
+	
+		chmod 777 dirName
+
+		u=root user/owner,g=group,o=other
+                + add, - remove, = assign permission 
+		u+w(add write permission to user)
+	1. chmod -> used to change access mode of file.
+			chmod u-w,g+w,o=wx fileName
+	2. chown -> change the owner.
+			chown karri file1
+
+	3. chgrp -> change the group.
+			chgrp myGroup file1
+
+chmod 777 dir1
+chmod 755 file1
+
+chmod g=r,o=rw dir1
+chmod u=r,g=rwx,o=x file1
+
+chmod u+w,g-w,o+r file1
+
+chown karri dir1
+chgrp linux file1
+	
+
+
+

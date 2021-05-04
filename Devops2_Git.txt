@@ -1,0 +1,222 @@
+			
+			     ::--Git--::
+
+software configuration management (or)
+ source code management
+	1.Centralized version system(cvcs) ex:svn
+	2.Distributed version system ex:git
+
+Drawback of cvcs:
+1.As everyThing is central server gets down then everthing
+  gets down.
+2.we need internet.
+
+Distributed version system:
+	Central Repo
+	local Repo Local Repo.....
+	workspace  workspace.....
+
+-Every contributer has local copy or clone of main Repo.
+-no need of internet,very fast,reliable.
+
+	CVCS                       |              DVCS
+1.In cvcs the client need get          1.In Dvcs each client can have local
+local copy of src from server and   	repo as well and complete history
+commit those change in central          on it.client need change local
+server.                                  repo then push to central repo.
+
+2.CVCS is easy to learn and setup.     2.
+
+3.working on branches is difficult 
+in cvcs often faced major conflit.
+
+4.CVCS donot provide offline mode.
+
+5.slow because of internet access.
+
+6.If server is down developer cannot     6.In dvcs if central server is down
+  work.					  then they work among local copies.
+
+..................................
+
+Git is a software,git-hub and git-lab are service.
+
+Stages of git and its terminology
+
+git init=> dir changes to local repo.
+	   3 stages will happen:1.workspace/workdirectory 
+				2.staging area
+				3.local repo
+		1. to 2. (git init/add)
+		2. to 3. (commit/save/snapshot)-commitId
+
+	After 'local repo' -PUSH--> to 'GIT-HUB'(central repo/storage).
+	
+	'GIT-HUB' -PULL--> to 'Local Repo/staging area/workspace'
+
+snapshot is incremental back up save only latest changes not all.
+(Incremental SnapShot)
+
+Repository:A place where you have all your code.
+	   Kind of folder
+	   Changes are personal to that particular repo.
+Server: It stores all repository.
+	It contains meta data also.
+
+working directory: where you see physical files and modification.
+		   At a time you work only on one branch.
+	
+               		 (add)            (commit)
+	 working directory---->staging area---->local repo
+
+commit: stores changes in repo and you will get commit Id.
+	It has 40 alpha numeric characters.
+	It has SHA-1 check sum concept.
+	Even if litte change like dot, commit id will change.
+	commit is also named as SHA1 hash.
+
+commit Id: to identify who changed the file.
+
+Tags: Tags assign meaningful name with specific version in the repo.
+
+snapshot: represent some  data of particular time.
+	  
+Push:copy of changes from local repo to central repo, this is used to 
+	save permantly in git repo.
+Pull:copy of changes from  central repo to local repo, Sync. between two repos.	
+
+
+Branch:
+	product is same, so one repo allows diffrent task.
+	Each task has one separate branch.
+	Finally merges(code) all branches.
+	usefull when you work parallely.
+	can create one branch basis on another.
+	default is master.
+
+Advantages:
+	Free and open source.
+	Fast and small.
+	security.
+	no need of powerful hardware.
+	Easier branching.
+
+Repo : Bare(central) and Non-Bare(local)
+
+.....................................................
+
+yum update -y
+yum install git -y
+git --version (2.23.3)
+git config --global user.name "Ram"
+git config --global user.email "x@gmail.com"
+git config --list//view user and email
+
+**GIT Commit, Push and Pull**
+
+-create one directory
+-git init
+-touch file
+-git init
+-git add .
+-git commit -m "first commit"
+-git status (status of working area)
+-git log 
+-git show <commit_id>
+-git remote add origin <url>
+-git push -u origin master
+
+
+create hidden file .gitIgnore
+- vi gitignore
+	enter *.css,*.java//ignore all css and java
+- git add .gitIgnore
+- git commit -m "ignore files"
+- git status
+- git add.
+- git commit -m ""
+- git push -u origin master
+- git log --grep "ignore"//search based on key words
+
+...............................................................
+
+Branch and Merge:
+
+- Branches is used to work in parallel development.
+- Each task has separate master branch.
+- you can create any no. of branches.
+- changes are branch specific and not reflect in other branch.
+- default branch is master.
+- when create a new branch ,data of existing branch is copied to new branch.
+- If you not commit / add then that  file will be visible in work space of all branch.
+commands:
+ - git branch [list available branches]
+ - git branch <branch name> [create new branch]
+ - git checkout <branch name> [go to specific branch]
+ - git branch -d <branch name> [delete branch]
+
+
+Pulling mechanism to merge branches.
+you can't merge branches of different repository.
+
+- git merge <branch name>
+- git log
+- git push -u origin master
+ 
+ -:Git Conflict:-
+   -when same file have diff. content on diff. branch and if you do merge conflict occurs.
+   -conflict occur when you merge branches.
+
+-:Git Stashing:-
+  when you are working on specfic file you not yet commit/added ,and you want to work in some other file 
+  keeping the previous file in stash and start new working on new file(after you add and commit) and again
+  bring the previous file from stash and continue the work. 
+  
+  Stash applies on modify file not new file.
+
+  - git stash
+  - git stash list
+  - git stash apply stash@[i]  //i-> which file
+  - git stash clear
+
+-:Git Reset:-
+  - to revoke add command.(reset file from staging area)
+  - git reset --hard(remove from work space as well as staging area)
+
+ - git reset .
+
+
+::-GIT Revert-::
+
+-Reset is before commit
+-Revert  is after commit
+ -Revert command is used to undo an existing commit.
+ -git revert <commit_id>
+ -Revert also generate new commit id , brining previous file back.
+   
+
+remove untrack file::
+ -git clean -n (dry run)
+ -git clean -f (forcefully)
+ 
+
+::-Tags-::
+ -git tag
+ -git show <tag name>
+ -git tag -d <tag name>
+ -git tag -a important -m "This is imp. commit" <tagId>
+::-clone-::
+  git clone <url of git hub repo>
+
+
+ **- git remote -v
+   - git remote add upstream <url>
+   - git stash
+   - git stash pop
+   - git rebase origin/master rhyme2
+   - git log --start
+   - git log --graph
+   - git log --oneline
+   - git rebase -i commit-id
+   - vi ./git/info/exclude
+

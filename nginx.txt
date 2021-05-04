@@ -1,0 +1,23 @@
+						~:Nginx:~
+
+Acts as webserver and Proxy
+  - Web Server
+	serves web content
+  - Proxy
+	Load Balancing 
+	Backend Routing
+	caching
+ + Layer 4 and Layer 7 proxing in Nginx:
+   - Ngnix can operate in Layer 7(http)(http context) or layer 4(tcp)(stream context)
+ 
+Getting Started::
+ + Install Nginx
+ + Nginx as webserver
+ + Nginx as layer 7 proxy
+ + Nginx as layer 4 proxy
+ + Enable Https on NginX
+ + Enable TLS 1.3 on NginX
+ + Enable HTTP/2 on NginX 
+
+ 
+

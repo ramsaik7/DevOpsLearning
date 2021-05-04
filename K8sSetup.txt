@@ -1,0 +1,109 @@
+						 --------------K8S Setup---------------
+sudo su
+
+apt-get update
+
+swapoff -a
+
+vi /etc/fstab    //comment out the swapfile
+
+nano /etc/hostname //add kmaster
+
+ifconfig
+
+nano /etc/network/interfaces
+	auto lo
+	iface lo inet loopback
+	
+	auto enp0s8
+	iface enp0s8 inet static
+	address 192.168.56.101
+
+nano /etc/hosts
+	ipaddress kmaster
+
+reboot
+
+apt-get install openssh-server
+
+apt-get update
+
+apt-get install -y docker.io
+
+apt-get update && apt-get install -y apt-transport-https curl
+
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+
+cat <<EOF >/etc/apt/sources.list.d/kubernetes.list
+deb http://apt.kubernetes.io/ kubernetes-xenial main
+EOF
+
+apt-get update
+
+apt-get install -y kubelet kubeadm kubectl
+
+exit
+
+sudo su
+nano /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+	Environment="cgroup-driver=systemd/cgroup-driver=cgroupfs"
+exit
+
+-----------------------Repeat Same Steps in Another Node----------------------------------
+
+KNode:
+ cat /etc/hosts
+	add ipadress kmaster
+ nano /etc/hostname
+
+----------------------------------------------------------------------------
+
+KMaster:
+ cat /etc/hosts
+	add ipadress knode
+
+---------------------------------------restart both VM!!--------------------------------------
+Not sudo su
+sudo kubeadm init --pod-network-cidr=192.168.0.0/16 --apiserver-advertise-address=ychup90691dns.eastus2.cloudapp.azure.com
+
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+kubectl apply -f https://docs.projectcalico.org/v3.3/getting-started/kubernetes/installation/hosted/kubernetes-datastore/calico-networking/1.7/calico.yaml
+
+kubectl get pods -o wide --all-namespaces
+
+kubectl create -f https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/recommended/kubernetes-dashboard.yaml
+or
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0/aio/deploy/recommended.yaml
+
+kubectl proxy
+
+http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
+
+kubectl create serviceaccount dashboard -n default
+
+kubectl create clusterrolebinding dashboard-admin -n default --clusterrole=cluster-admin --serviceaccount=default:dashboard
+
+kubectl get secret $(kubectl get serviceaccount dashboard -o jsonpath="{.secrets[0].name}") -o jsonpath="{.data.token}" | base64 --decode
+
+
+
+kubectl proxy --address 0.0.0.0 --accept-hosts '.*'
+
+
+
+137.116.57.76
+
+
+
+
+kubeadm init --apiserver-advertise-address=10.0.0.4 --pod-network-cidr=192.168.0.0/16
+
+kubeadm join 10.0.0.4:6443 --token gv6jnj.ktmsbgwrojalpcqv --discovery-token-ca-cert-hash sha256:45378134b424a0fb133c745f8407d402f7ed332c90e197ab09784eae6fe33720
+
+
+
+eyJhbGciOiJSUzI1NiIsImtpZCI6IlExdTFFTTVuWDZCeDI2S0NmTVRXaXU0WGxhWjFnZ3NHQjdNeFBpWl9GS2MifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJkZWZhdWx0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6ImRhc2hib2FyZC10b2tlbi05emJxciIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50Lm5hbWUiOiJkYXNoYm9hcmQiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC51aWQiOiI3Mjc5MzAwZi1hNzcyLTQ3YWItYmVlMS05MDIxNGY4YWE5OTAiLCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6ZGVmYXVsdDpkYXNoYm9hcmQifQ.VT2s4RPgWlm_jHl2Dedw_JzHI-S5p19VLxqlMLCDXm4UE9CsC_jWDrHFcn1mVCCqQ-ByUy4QjfJuRZ6nYypt_G-uFso87dsmsahtTAKD15_pj6xH0JSwnm4L-TNrbDmm9lPEiKWwZR7G2hKnT_Nm5s-7XPcBSeDYe8k-Fud63Fx_iYy97jdeQTRubtl-zfj9zjZhB_aHmTUOqC5UbmlUL1eCzMqpRFfbb-HibK9Re2V8zxaCBYaLSCuw9GXlE-UO6aYjOkhIXP7bWDKsapdp7PgZQqdl1q8XFWAqYbNP24CVP9ptOkxJEaoxahbHJDhW36TM5_u66hd3YBLr-Jhq1w
+eyJhbGciOiJSUzI1NiIsImtpZCI6IlExdTFFTTVuWDZCeDI2S0NmTVRXaXU0WGxhWjFnZ3NHQjdNeFBpWl9GS2MifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJkZWZhdWx0Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZWNyZXQubmFtZSI6ImRhc2hib2FyZC10b2tlbi05emJxciIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50Lm5hbWUiOiJkYXNoYm9hcmQiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC51aWQiOiI3Mjc5MzAwZi1hNzcyLTQ3YWItYmVlMS05MDIxNGY4YWE5OTAiLCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6ZGVmYXVsdDpkYXNoYm9hcmQifQ.VT2s4RPgWlm_jHl2Dedw_JzHI-S5p19VLxqlMLCDXm4UE9CsC_jWDrHFcn1mVCCqQ-ByUy4QjfJuRZ6nYypt_G-uFso87dsmsahtTAKD15_pj6xH0JSwnm4L-TNrbDmm9lPEiKWwZR7G2hKnT_Nm5s-7XPcBSeDYe8k-Fud63Fx_iYy97jdeQTRubtl-zfj9zjZhB_aHmTUOqC5UbmlUL1eCzMqpRFfbb-HibK9Re2V8zxaCBYaLSCuw9GXlE-UO6aYjOkhIXP7bWDKsapdp7PgZQqdl1q8XFWAqYbNP24CVP9ptOkxJEaoxahbHJDhW36TM5_u66hd3YBLr-Jhq1w

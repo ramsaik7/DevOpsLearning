@@ -1,0 +1,21 @@
+			
+			::~Jenkins~::
+
+~Continous Integration Tool~
+ 
+  ::WHY Jenkins::
+   CRON on steriods
+   Automate mundanity::
+   - Dev to Prod
+   - CI
+   - CD
+
+  -Download jenkins:
+      Run:-> java -jar jenkins.war
+  -mvn compile , mvn test, mvn package
+
+
+  - Build pipeline(plugin and create a stage view)
+  - Pipeline maven integration(plugins)
+  - Html publisher,Jacoco(plugins)
+    
