@@ -1,0 +1,142 @@
+
+								SECTION-'A'
+
+--1.>
+	select movie.mov_title 
+	from movie 
+	join movie_genres 
+	on movie.mov_id=movie_genres.mov_id 
+	join genres 
+	on genres.gen_id=movie_genres.gen_id AND genres.gen_title='Horror';
+
+
+--2.>
+	select reviewer.rev_name 
+	from reviewer join rating 
+	on reviewer.rev_id=rating.rev_id AND rating.rev_stars>=8;
+
+--3.>
+	select 
+	actor.act_id AS ActorId,
+	actor.act_fname AS ActorFirstName,
+	actor.act_lname AS ActorLastName,
+	actor.act_gender As Gender 
+	from actor
+
+	where act_id IN(
+	select movie_cast.act_id from movie_cast where movie_cast.mov_id IN(
+	select movie.mov_id from movie where mov_title ='Deliverance'));
+	
+
+
+--4.>
+
+	select 
+	(director.dir_fname+director.dir_lname) 
+	AS 
+	Director_Name from director where 
+	director.dir_id=(
+	select movie_direction.dir_id from movie_direction where movie_direction.mov_id IN(
+		select movie.mov_id from movie where mov_title='EyesWideShut'));
+
+--5.>
+
+	select 
+	movie.mov_title AS Movie_Title,
+	movie.mov_year AS MovieYear,
+	movie.mov_dt_rel AS MovieReleaseDate,
+	(director.dir_fname+director.dir_lname) AS DirectorName,
+	(actor.act_fname+actor.act_lname) AS ActorName 
+	from movie join movie_direction
+	on movie.mov_id=movie_direction.mov_id 
+	join director 
+	on director.dir_id=movie_direction.dir_id
+	join movie_cast on movie_cast.mov_id=movie.mov_id
+	join actor
+	on movie_cast.act_id=actor.act_id
+	join rating
+	on movie.mov_id=rating.mov_id
+	join reviewer 
+	on  rating.rev_id=reviewer.rev_id 
+	And reviewer.rev_name='NealWruck';
+
+
+
+--6.>
+	select distinct movie.mov_year AS Year from movie where mov_id IN(
+		select mov_id from rating where rating.rev_stars>4) order by mov_year;
+
+--7.>
+	select movie.mov_title AS MovieTitle from movie where mov_id IN
+		(select mov_id from rating where rating.no_of_ratings IS null);
+
+--8.>
+	select movie.mov_title As MovieTitle from movie
+		join movie_direction on movie.mov_id=movie_direction.mov_id
+		join director on movie_direction.dir_id=director.dir_id
+		AND director.dir_fname='David';
+
+--9.>
+
+	select actor.act_fname As ActorFirstName,actor.act_lname As ActorLastName from actor
+		join movie_cast on actor.act_id=movie_cast.act_id
+		join movie on movie_cast.mov_id=movie.mov_id
+		AND movie.mov_title='BoogieNights';
+
+
+--10.>
+	
+	select (actor.act_fname+actor.act_lname) AS ActorName 
+	from actor
+	where act_id IN(
+		select act_id 
+		from movie_cast 
+		Group BY
+		act_id 
+		Having COUNT(act_id)>1);
+
+
+--************************************************************************************************
+
+
+
+								SECTION-B
+
+--STORED PROCEDURE::
+
+CREATE PROCEDURE sp_castActorToMovie
+	@actorId int,
+	@movieId int
+	AS
+	BEGIN
+	Declare @oldMovieId int;
+	Declare @countActor int;
+	
+	BEGIN TRY
+	
+	select @countActor=count(movie_cast.act_id) from movie_cast where movie_cast.act_id=@actorId And movie_cast.mov_id=@movieId;
+			print(@countActor)
+		
+			IF(@countActor=0)
+				BEGIN			
+					insert into movie_cast(act_id,mov_id) values(@actorId,@movieId);
+					print('New Record Successfully Inserted');
+				END
+			Else 
+				BEGIN
+					print('Record Already Updated');
+				END
+			END TRY
+
+			BEGIN CATCH
+				PRINT('Invalid Operation!!');
+			END CATCH
+
+		END
+		GO
+
+
+
+
+
+
