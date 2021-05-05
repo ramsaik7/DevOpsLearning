@@ -1,0 +1,35 @@
+
+	                                ::-Virtualization-::
+
+- Technique of splitting of physical resource into as many as logical resources.
+- Virtualization is technology that transform hardware into software.
+- 1:N (1 server N VM's)
+
+Advantage: High Availability, Fault tolerance, Reduced costs.
+
+Hypervisor is piece of software or firmware that create and run virtual Machine.
+A Hypervisor is somtimes also called a Virtual Machine Manager(VMM).
+		--------OS-------------------
+		--------Virtual Machine's-----
+		--------Hypervisor------------(Esxi for vmware)
+		--------Hardware--------------
+
+Type-1 Hypervisor::(Firmware)(Bare Metal/Native)
+	->Also called Bare metal hypervisor and run directly on systems hardware.
+	->Esxi provide virutalization layer that abstracts the cpu,storage and n/w resources of the 
+	physical host into multiple vm.
+        ->Hardware level Virtualization.
+	->VMware Esxi,Hyper v
+
+Type -2 Hypervisor::(Hosted Type)
+	->Hypervisor that runs within a conventional OS enviroment, and the host os provided.
+
+
+	        --------OS-------------------
+		--------Virtual Machine's-----
+		--------Hypervisor------------(Esxi for vmware)
+		--------Host OS---------------
+		--------Hardware--------------
+
+	->OS level Virtualization.
+	->VMware workstations,Oracle virtual Box.
